@@ -31,7 +31,10 @@ app.get("/u/:shortURL", (req, res) => {
   else { res.redirect(longURL); }
 });
 app.get(["/urls", "/"], (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render("urls_index", templateVars);
 });
 app.get("/urls/new", (req, res) => {
