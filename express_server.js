@@ -11,9 +11,11 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
+var cookieParser = require('cookie-parser')
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(cookieParser())
 app.set("view engine", "ejs");
 
 
@@ -52,6 +54,10 @@ app.post("/urls", (req, res) => {
   let randomString = generateRandomString();
   urlDatabase[randomString] = req.body.longURL;
   res.redirect('/urls/' + randomString);
+});
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body.username);
+  res.redirect('/urls');
 });
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
