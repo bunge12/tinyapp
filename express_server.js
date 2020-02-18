@@ -22,6 +22,13 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  if (!longURL) {
+    res.status(404).send("Sorry, we cannot find that! <a href='/'> Go home</a>");
+  }
+  else { res.redirect(longURL); }
+});
 app.get(["/urls", "/"], (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
@@ -38,7 +45,6 @@ app.post("/urls", (req, res) => {
   urlDatabase[randomString] = req.body.longURL;
   res.redirect('/urls/' + randomString);
 });
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
