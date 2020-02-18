@@ -21,7 +21,6 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   if (!longURL) {
@@ -44,6 +43,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
+});
+app.post("/urls/:shortURL", (req, res) => {
+  urlDatabase[req.params.shortURL] = req.body.newURL;
+  res.redirect('/urls/' + req.params.shortURL);
 });
 app.post("/urls", (req, res) => {
   let randomString = generateRandomString();
