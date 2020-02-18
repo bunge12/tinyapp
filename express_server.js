@@ -7,6 +7,14 @@ function generateRandomString() {
   return result;
 }
 
+const emailLookup = (email) => {
+
+  for (let user of Object.keys(users)) {
+    if (email === users[user].email) { return true; }
+    else { return false; }
+  }
+};
+
 const express = require("express");
 const app = express();
 const PORT = 8080;
@@ -90,12 +98,20 @@ app.post("/urls", (req, res) => {
 });
 app.post("/register", (req, res) => {
   let randomString = generateRandomString();
-  users[randomString] = {
-    id: randomString,
-    email: req.body.email,
-    password: req.body.password
-  };
-  res.redirect('/urls');
+  if (req.body.email === "" || req.body.password === "") {
+    res.status(400).send("Sorry, password or email cannot be empty! <a href='/'> Go home</a>");
+  } else if (emailLookup(req.body.email)) {
+    res.status(400).send("Sorry, this email exists! <a href='/'> Go home</a>");
+  }
+  else {
+    users[randomString] = {
+      id: randomString,
+      email: req.body.email,
+      password: req.body.password
+    };
+    res.cookie('user_id', randomString);
+    res.redirect('/urls');
+  }
 });
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
