@@ -11,7 +11,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
-var cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser')
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -23,6 +23,18 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   if (!longURL) {
@@ -75,6 +87,15 @@ app.post("/urls", (req, res) => {
   let randomString = generateRandomString();
   urlDatabase[randomString] = req.body.longURL;
   res.redirect('/urls/' + randomString);
+});
+app.post("/register", (req, res) => {
+  let randomString = generateRandomString();
+  users[randomString] = {
+    id: randomString,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.redirect('/urls');
 });
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
