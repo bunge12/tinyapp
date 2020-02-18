@@ -14,12 +14,12 @@
     <% if (username) { %>
     <span class='text-light'>Welcome, <%= username %>!</span>
     <form action='/logout' method='POST'>
-      <button type='submit' class='btn-outline'>Logout</button>
+      <button type='submit' class='btn btn-outline-light ml-2'>Logout</button>
     </form>
     <% } else { %>
-    <form action='/login' method='POST'>
-      <input type='text' name='username' placeholder='Username'>
-      <button type='submit' class='btn-primary'>Login</button>
+    <form action='/login' method='POST' class='form-inline'>
+      <input type='text' name='username' placeholder='Username' class='form-control'>
+      <button type='submit' class='btn btn-outline-light ml-2'>Login</button>
     </form>
     <% } %>
   </nav>
