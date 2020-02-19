@@ -16,6 +16,16 @@ const emailLookup = (email) => {
   }
 };
 
+const urlsForUser = (userID) => {
+  let result = {};
+  for (let [key, value] of Object.entries(urlDatabase)) {
+    if (value['userID'] === userID) {
+      result[key] = value['longURL'];
+    }
+  }
+  return result;
+};
+
 // App Requires
 const express = require("express");
 const app = express();
@@ -30,8 +40,8 @@ app.set("view engine", "ejs");
 
 // App Data
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 const users = {
   "userRandomID": {
@@ -64,7 +74,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.get(["/urls", "/"], (req, res) => {
   let templateVars = {
     user: users[req.cookies["user_id"]],
-    urls: urlDatabase
+    urls: urlsForUser(req.cookies["user_id"])
   };
   res.render("urls_index", templateVars);
 });
@@ -97,7 +107,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_show", templateVars);
@@ -105,19 +115,18 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
-  let templateVars = {
-    urls: urlDatabase,
-    user: users[req.cookies["user_id"]]
-  };
-  res.render("urls_index", templateVars);
+  res.redirect('/urls');
 });
 app.post("/urls/:shortURL", (req, res) => {
-  urlDatabase[req.params.shortURL] = req.body.newURL;
+  urlDatabase[req.params.shortURL].longURL = req.body.newURL;
   res.redirect('/urls/' + req.params.shortURL);
 });
 app.post("/urls", (req, res) => {
   let randomString = generateRandomString();
-  urlDatabase[randomString] = req.body.longURL;
+  urlDatabase[randomString] = {
+    longURL: req.body.longURL,
+    userID: req.cookies["user_id"]
+  };
   res.redirect('/urls/' + randomString);
 });
 app.post("/register", (req, res) => {
