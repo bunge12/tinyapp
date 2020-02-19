@@ -8,7 +8,6 @@ function generateRandomString() {
 }
 
 const emailLookup = (email) => {
-
   for (let user of Object.keys(users)) {
     if (email === users[user].email) { return true; }
     else { return false; }
@@ -124,11 +123,21 @@ app.post("/register", (req, res) => {
   }
 });
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect('/urls');
+  if (emailLookup(req.body.email)) {
+    for (let user of Object.keys(users)) {
+      if (req.body.email === users[user].email) {
+        if (req.body.password === users[user].password) {
+          res.cookie('user_id', users[user].id);
+          res.redirect('/urls');
+        }
+      }
+    }
+  } else {
+    res.status(403).send("Sorry, we cannot find that! <a href='/'> Go home</a>");
+  }
 });
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 app.listen(PORT, () => {
