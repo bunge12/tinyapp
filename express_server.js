@@ -65,11 +65,15 @@ const users = {
 
 /// Short Links: unauth OK
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  if (!longURL) {
-    res.status(404).send("Sorry, this short URL doesn't exist! <a href='/'>Go to home page.</a>");
+  if (typeof urlDatabase[req.params.shortURL] !== 'undefined') {
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    if (!longURL) {
+      res.status(404).send("Sorry, this short URL doesn't exist! <a href='/'>Go to home page.</a>");
+    } else {
+      res.redirect(longURL);
+    }
   } else {
-    res.redirect(longURL);
+    res.status(404).send("Sorry, this short URL doesn't exist! <a href='/'>Go to home page.</a>");
   }
 });
 
