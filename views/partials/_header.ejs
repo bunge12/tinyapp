@@ -11,8 +11,8 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <% if (username) { %>
-    <span class='text-light'>Welcome, <%= username %>!</span>
+    <% if (true) { %>
+    <span class='text-light'>Welcome, <%= user.email %>!</span>
     <form action='/logout' method='POST'>
       <button type='submit' class='btn btn-outline-light ml-2'>Logout</button>
     </form>
