@@ -1,30 +1,34 @@
-function generateRandomString() {
+// App Functions
+const generateRandomString = () => {
   let result = '';
   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (let i = 0; i < 6; i++) {
     result += characters.charAt(Math.floor(Math.random() * 62));
   }
   return result;
-}
+};
 
 const emailLookup = (email) => {
   for (let user of Object.keys(users)) {
-    if (email === users[user].email) { return true; }
+    if (email === users[user].email) {
+      return true;
+    }
   }
 };
 
+// App Requires
 const express = require("express");
 const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 
-
+// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser())
+app.use(cookieParser());
 app.set("view engine", "ejs");
 
-
+// App Data
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -46,12 +50,15 @@ const users = {
     password: "dishwasher-funk"
   }
 };
+
+// Routing
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   if (!longURL) {
     res.status(404).send("Sorry, this short URL doesn't exist! <a href='/'>Go to home page.</a>");
+  } else {
+    res.redirect(longURL);
   }
-  else { res.redirect(longURL); }
 });
 
 app.get(["/urls", "/"], (req, res) => {
@@ -77,10 +84,14 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {
-    user: users[req.cookies["user_id"]]
-  };
-  res.render("urls_new", templateVars);
+  if (req.cookies["user_id"]) {
+    let templateVars = {
+      user: users[req.cookies["user_id"]]
+    };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect('/login');
+  }
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -115,14 +126,12 @@ app.post("/register", (req, res) => {
     res.status(400).send("Sorry, password or email cannot be empty! <a href='/'>Go to home page.</a>");
   } else if (emailLookup(req.body.email)) {
     res.status(400).send("Sorry, an account withbthis email exists! <a href='/'>Go to home page.</a>");
-  }
-  else {
+  } else {
     users[randomString] = {
       id: randomString,
       email: req.body.email,
       password: req.body.password
     };
-    console.log(users);
     res.cookie('user_id', randomString);
     res.redirect('/urls');
   }
