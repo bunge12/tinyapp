@@ -32,6 +32,7 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -163,8 +164,9 @@ app.post("/register", (req, res) => {
     users[randomString] = {
       id: randomString,
       email: req.body.email,
-      password: req.body.password
+      password: bcrypt.hashSync(req.body.password, 10)
     };
+    console.log(users);
     res.cookie('user_id', randomString);
     res.redirect('/urls');
   }
@@ -175,7 +177,7 @@ app.post("/login", (req, res) => {
   if (emailLookup(req.body.email)) {
     for (let user of Object.keys(users)) {
       if (req.body.email === users[user].email) {
-        if (req.body.password === users[user].password) {
+        if (bcrypt.compareSync(req.body.password, users[user].password)) {
           res.cookie('user_id', users[user].id);
           res.redirect('/urls');
         } else {
