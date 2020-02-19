@@ -62,8 +62,10 @@ const users = {
 };
 
 // Routing
+
+/// Short Links: unauth OK
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   if (!longURL) {
     res.status(404).send("Sorry, this short URL doesn't exist! <a href='/'>Go to home page.</a>");
   } else {
@@ -71,6 +73,7 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+/// Home
 app.get(["/urls", "/"], (req, res) => {
   let templateVars = {
     user: users[req.cookies["user_id"]],
@@ -113,13 +116,23 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+/// Delete, only if created by user
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect('/urls');
+  if (req.cookies["user_id"] !== urlDatabase[req.params.shortURL].userID) {
+    res.status(403).send("Sorry, you don't have permission! <a href='/'>Go to home page.</a>");
+  } else {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect('/urls');
+  }
 });
+/// Update, only if created by user
 app.post("/urls/:shortURL", (req, res) => {
-  urlDatabase[req.params.shortURL].longURL = req.body.newURL;
-  res.redirect('/urls/' + req.params.shortURL);
+  if (req.cookies["user_id"] !== urlDatabase[req.params.shortURL].userID) {
+    res.status(403).send("Sorry, you don't have permission! <a href='/'>Go to home page.</a>");
+  } else {
+    urlDatabase[req.params.shortURL].longURL = req.body.newURL;
+    res.redirect('/urls/' + req.params.shortURL);
+  }
 });
 app.post("/urls", (req, res) => {
   let randomString = generateRandomString();
