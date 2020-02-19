@@ -36,12 +36,17 @@ const users = {
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
+  "dkfjwbejhf": {
+    id: "dkfjwbejhf",
+    email: "user@email.com",
+    password: "1111"
+  },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   if (!longURL) {
