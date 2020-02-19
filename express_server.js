@@ -10,7 +10,6 @@ function generateRandomString() {
 const emailLookup = (email) => {
   for (let user of Object.keys(users)) {
     if (email === users[user].email) { return true; }
-    else { return false; }
   }
 };
 
@@ -123,6 +122,7 @@ app.post("/register", (req, res) => {
       email: req.body.email,
       password: req.body.password
     };
+    console.log(users);
     res.cookie('user_id', randomString);
     res.redirect('/urls');
   }
@@ -134,6 +134,8 @@ app.post("/login", (req, res) => {
         if (req.body.password === users[user].password) {
           res.cookie('user_id', users[user].id);
           res.redirect('/urls');
+        } else {
+          res.status(403).send("Sorry, passowrd wrong! <a href='/'> Go home</a>");
         }
       }
     }
