@@ -49,7 +49,7 @@ const users = {
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   if (!longURL) {
-    res.status(404).send("Sorry, we cannot find that! <a href='/'> Go home</a>");
+    res.status(404).send("Sorry, this short URL doesn't exist! <a href='/'>Go to home page.</a>");
   }
   else { res.redirect(longURL); }
 });
@@ -112,9 +112,9 @@ app.post("/urls", (req, res) => {
 app.post("/register", (req, res) => {
   let randomString = generateRandomString();
   if (req.body.email === "" || req.body.password === "") {
-    res.status(400).send("Sorry, password or email cannot be empty! <a href='/'> Go home</a>");
+    res.status(400).send("Sorry, password or email cannot be empty! <a href='/'>Go to home page.</a>");
   } else if (emailLookup(req.body.email)) {
-    res.status(400).send("Sorry, this email exists! <a href='/'> Go home</a>");
+    res.status(400).send("Sorry, an account withbthis email exists! <a href='/'>Go to home page.</a>");
   }
   else {
     users[randomString] = {
@@ -135,12 +135,12 @@ app.post("/login", (req, res) => {
           res.cookie('user_id', users[user].id);
           res.redirect('/urls');
         } else {
-          res.status(403).send("Sorry, passowrd wrong! <a href='/'> Go home</a>");
+          res.status(403).send("Sorry, wrong password! <a href='/'>Go to home page.</a>");
         }
       }
     }
   } else {
-    res.status(403).send("Sorry, we cannot find that! <a href='/'> Go home</a>");
+    res.status(403).send("Sorry, we cannot find an account with that email! <a href='/'>Go to home page.</a>");
   }
 });
 app.post("/logout", (req, res) => {
