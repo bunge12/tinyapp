@@ -77,7 +77,7 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
-/// Home
+/// Home, Register, Login
 app.get(["/urls", "/"], (req, res) => {
   let templateVars = {
     user: users[req.cookies["user_id"]],
@@ -100,6 +100,7 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 });
 
+/// New URL, only if authorised
 app.get("/urls/new", (req, res) => {
   if (req.cookies["user_id"]) {
     let templateVars = {
@@ -111,6 +112,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+/// Display short URL
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
@@ -129,6 +131,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     res.redirect('/urls');
   }
 });
+
 /// Update, only if created by user
 app.post("/urls/:shortURL", (req, res) => {
   if (req.cookies["user_id"] !== urlDatabase[req.params.shortURL].userID) {
@@ -138,6 +141,8 @@ app.post("/urls/:shortURL", (req, res) => {
     res.redirect('/urls/' + req.params.shortURL);
   }
 });
+
+/// Process new URL
 app.post("/urls", (req, res) => {
   let randomString = generateRandomString();
   urlDatabase[randomString] = {
@@ -146,6 +151,8 @@ app.post("/urls", (req, res) => {
   };
   res.redirect('/urls/' + randomString);
 });
+
+/// Process new registration
 app.post("/register", (req, res) => {
   let randomString = generateRandomString();
   if (req.body.email === "" || req.body.password === "") {
@@ -162,6 +169,8 @@ app.post("/register", (req, res) => {
     res.redirect('/urls');
   }
 });
+
+/// Process login request
 app.post("/login", (req, res) => {
   if (emailLookup(req.body.email)) {
     for (let user of Object.keys(users)) {
@@ -178,10 +187,14 @@ app.post("/login", (req, res) => {
     res.status(403).send("Sorry, we cannot find an account with that email! <a href='/'>Go to home page.</a>");
   }
 });
+
+/// Logout
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
   res.redirect('/urls');
 });
+
+// Server Up:
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
