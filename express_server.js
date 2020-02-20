@@ -19,8 +19,8 @@ app.use(methodOverride('_method'))
 
 // App Data
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW", totalHits: 0 },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW", totalHits: 0 }
 };
 const users = {
   "userRandomID": {
@@ -46,6 +46,7 @@ const users = {
 app.get("/u/:shortURL", (req, res) => {
   if (typeof urlDatabase[req.params.shortURL] !== 'undefined') {
     if (urlDatabase[req.params.shortURL].longURL) {
+      urlDatabase[req.params.shortURL].totalHits += 1;
       res.redirect(urlDatabase[req.params.shortURL].longURL);
     }
   } else {
@@ -119,7 +120,8 @@ app.get("/urls/:shortURL", (req, res) => {
     let templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
-      user: users[req.session.userID]
+      user: users[req.session.userID],
+      totalHits: urlDatabase[req.params.shortURL].totalHits
     };
     res.render("urls_show", templateVars);
   }
@@ -150,7 +152,8 @@ app.post("/urls", (req, res) => {
   let randomString = generateRandomString();
   urlDatabase[randomString] = {
     longURL: req.body.longURL,
-    userID: req.session.userID
+    userID: req.session.userID,
+    totalHits: 0
   };
   res.redirect('/urls/' + randomString);
 });
