@@ -52,7 +52,14 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 /// Home, Register, Login
-app.get(["/urls", "/"], (req, res) => {
+app.get("/", (req, res) => {
+  if (req.session.userID) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
+});
+app.get("/urls", (req, res) => {
   if (req.session.userID) {
     let templateVars = {
       user: users[req.session.userID],
@@ -60,7 +67,7 @@ app.get(["/urls", "/"], (req, res) => {
     };
     res.render("urls_index", templateVars);
   } else {
-    res.redirect('/login');
+    res.status(403).send("You need to be logged in! <a href='/login'>Go to login page.</a>");
   }
 });
 
