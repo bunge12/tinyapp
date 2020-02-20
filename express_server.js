@@ -47,7 +47,11 @@ app.get("/u/:shortURL", (req, res) => {
       res.redirect(urlDatabase[req.params.shortURL].longURL);
     }
   } else {
-    res.status(404).send("Sorry, this short URL doesn't exist! <a href='/'>Go to home page.</a>");
+    let templateVars = {
+      error: 404,
+      message: "Sorry, this short URL doesn't exist!"
+    }
+    res.status(404).render("error", templateVars);
   }
 });
 
@@ -67,7 +71,11 @@ app.get("/urls", (req, res) => {
     };
     res.render("urls_index", templateVars);
   } else {
-    res.status(403).send("You need to be logged in! <a href='/login'>Go to login page.</a>");
+    let templateVars = {
+      error: 403,
+      message: "You need to be logged in to view this page."
+    }
+    res.status(403).render("error", templateVars);
   }
 });
 
@@ -107,10 +115,24 @@ app.get("/urls/new", (req, res) => {
 
 /// Display short URL
 app.get("/urls/:shortURL", (req, res) => {
-  if (!req.session.userID) {
-    res.status(403).send("You need to be logged in! <a href='/login'>Go to login page.</a>");
-  } else if (typeof urlDatabase[req.params.shortURL] === 'undefined') {
-    res.status(403).send("You don't have permission to view this page! <a href='/'>Go to home page.</a>");
+  if (typeof urlDatabase[req.params.shortURL] === 'undefined') {
+    let templateVars = {
+      error: 404,
+      message: "This link does not exist!."
+    }
+    res.status(404).render("error", templateVars);
+  } else if (!req.session.userID) {
+    let templateVars = {
+      error: 403,
+      message: "You need to be logged in to view this page."
+    }
+    res.status(403).render("error", templateVars);
+  } else if (urlDatabase[req.params.shortURL].userID !== req.session.userID) {
+    let templateVars = {
+      error: 403,
+      message: "This record was created by another user, you don't have permission to edit it."
+    }
+    res.status(403).render("error", templateVars);
   } else {
     let templateVars = {
       shortURL: req.params.shortURL,
@@ -124,7 +146,11 @@ app.get("/urls/:shortURL", (req, res) => {
 /// Delete, only if created by user
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (req.session.userID !== urlDatabase[req.params.shortURL].userID) {
-    res.status(403).send("Sorry, you don't have permission! <a href='/'>Go to home page.</a>");
+    let templateVars = {
+      error: 403,
+      message: "You need to be logged in to view this page."
+    }
+    res.status(403).render("error", templateVars);
   } else {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls');
@@ -134,7 +160,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 /// Update, only if created by user
 app.post("/urls/:shortURL", (req, res) => {
   if (req.session.userID !== urlDatabase[req.params.shortURL].userID) {
-    res.status(403).send("Sorry, you don't have permission! <a href='/'>Go to home page.</a>");
+    let templateVars = {
+      error: 403,
+      message: "You need to be logged in to view this page."
+    }
+    res.status(403).render("error", templateVars);
   } else {
     urlDatabase[req.params.shortURL].longURL = req.body.newURL;
     res.redirect('/urls/' + req.params.shortURL);
@@ -155,9 +185,17 @@ app.post("/urls", (req, res) => {
 app.post("/register", (req, res) => {
   let randomString = generateRandomString();
   if (req.body.email === "" || req.body.password === "") {
-    res.status(400).send("Sorry, password or email cannot be empty! <a href='/'>Go to home page.</a>");
+    let templateVars = {
+      error: 400,
+      message: "Sorry, password or email can't be empty!"
+    }
+    res.status(403).render("error", templateVars);
   } else if (emailLookup(req.body.email, users)) {
-    res.status(400).send("Sorry, an account withbthis email exists! <a href='/'>Go to home page.</a>");
+    let templateVars = {
+      error: 400,
+      message: "Sorry, an account with this email already exists."
+    }
+    res.status(403).render("error", templateVars);
   } else {
     users[randomString] = {
       id: randomString,
@@ -179,12 +217,20 @@ app.post("/login", (req, res) => {
           req.session.userID = users[user].id;
           res.redirect('/urls');
         } else {
-          res.status(403).send("Sorry, wrong password! <a href='/'>Go to home page.</a>");
+          let templateVars = {
+            error: 403,
+            message: "The password provided was wrong."
+          }
+          res.status(403).render("error", templateVars);
         }
       }
     }
   } else {
-    res.status(403).send("Sorry, we cannot find an account with that email! <a href='/'>Go to home page.</a>");
+    let templateVars = {
+      error: 403,
+      message: "We can't find an account with that email."
+    }
+    res.status(403).render("error", templateVars);
   }
 });
 
