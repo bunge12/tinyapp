@@ -27,12 +27,13 @@ const urlsForUser = (userID, database) => {
   return result;
 };
 
-const getUserByEmail = function (email, database) {
+/// Not using getUserByEmail, so used/tested other functions 
+/* const getUserByEmail = function (email, database) {
   for (let user of Object.keys(database)) {
     if (email === users[user].email) {
       return user;
     }
   };
-};
+}; */
 
-module.exports = { generateRandomString, emailLookup, urlsForUser, getUserByEmail }
+module.exports = { generateRandomString, emailLookup, urlsForUser/* , getUserByEmail */ }

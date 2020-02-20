@@ -1,5 +1,5 @@
 // App Requires
-const { generateRandomString, emailLookup, urlsForUser, getUserByEmail } = require('./helpers');
+const { generateRandomString, emailLookup, urlsForUser /*, getUserByEmail */ } = require('./helpers');
 const express = require("express");
 const app = express();
 const PORT = 8080;
