@@ -32,9 +32,9 @@ const errorPage = (res, error, message) => {
     message: message
   };
   res.status(error).render("error", templateVars);
-}
+};
 
-/// Not using getUserByEmail, so used/tested other functions 
+/// Not using getUserByEmail, so used/tested other functions
 /* const getUserByEmail = function (email, database) {
   for (let user of Object.keys(database)) {
     if (email === users[user].email) {
@@ -43,4 +43,4 @@ const errorPage = (res, error, message) => {
   };
 }; */
 
-module.exports = { generateRandomString, emailLookup, urlsForUser, errorPage }
+module.exports = { generateRandomString, emailLookup, urlsForUser, errorPage };

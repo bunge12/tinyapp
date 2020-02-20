@@ -69,11 +69,7 @@ app.get("/urls", (req, res) => {
     };
     res.render("urls_index", templateVars);
   } else {
-    let templateVars = {
-      error: 403,
-      message: "You need to be logged in to view this page."
-    };
-    res.status(403).render("error", templateVars);
+    errorPage(res, 403, 'You need to be logged in to view this page.');
   }
 });
 
@@ -116,17 +112,9 @@ app.get("/urls/:shortURL", (req, res) => {
   if (typeof urlDatabase[req.params.shortURL] === 'undefined') {
     errorPage(res, 404, 'This link does not exist! Please update your bookmark.');
   } else if (!req.session.userID) {
-    let templateVars = {
-      error: 403,
-      message: "You need to be logged in to view this page."
-    };
-    res.status(403).render("error", templateVars);
+    errorPage(res, 403, 'You need to be logged in to view this page.');
   } else if (urlDatabase[req.params.shortURL].userID !== req.session.userID) {
-    let templateVars = {
-      error: 403,
-      message: "This record was created by another user, you don't have permission to edit it."
-    };
-    res.status(403).render("error", templateVars);
+    errorPage(res, 403, "This record was created by another user, you don't have permission to edit it.");
   } else {
     let templateVars = {
       shortURL: req.params.shortURL,
@@ -140,11 +128,7 @@ app.get("/urls/:shortURL", (req, res) => {
 /// Delete, only if created by user
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (req.session.userID !== urlDatabase[req.params.shortURL].userID) {
-    let templateVars = {
-      error: 403,
-      message: "You need to be logged in to view this page."
-    };
-    res.status(403).render("error", templateVars);
+    errorPage(res, 403, 'You need to be logged in to view this page.');
   } else {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls');
@@ -154,11 +138,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 /// Update, only if created by user
 app.post("/urls/:shortURL", (req, res) => {
   if (req.session.userID !== urlDatabase[req.params.shortURL].userID) {
-    let templateVars = {
-      error: 403,
-      message: "You need to be logged in to view this page."
-    };
-    res.status(403).render("error", templateVars);
+    errorPage(res, 403, 'You need to be logged in to view this page.');
   } else {
     urlDatabase[req.params.shortURL].longURL = req.body.newURL;
     res.redirect('/urls/' + req.params.shortURL);
