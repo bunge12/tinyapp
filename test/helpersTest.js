@@ -52,4 +52,14 @@ describe('urlsForUser:', function () {
     const expectedOutput = aJ48lW = { b6UTxQ: 'https://www.tsn.ca', i3BoGr: 'https://www.google.ca' };
     assert.deepEqual(result, expectedOutput);
   });
+  it('should empty object for wrong username', function () {
+    const result = urlsForUser('kkk', urlDatabase);
+    const expectedOutput = {};
+    assert.deepEqual(result, expectedOutput);
+  });
+  it('should empty object for empty username', function () {
+    const result = urlsForUser('', urlDatabase);
+    const expectedOutput = {};
+    assert.deepEqual(result, expectedOutput);
+  });
 });
