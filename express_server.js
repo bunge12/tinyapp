@@ -1,33 +1,5 @@
-// App Functions
-const generateRandomString = () => {
-  let result = '';
-  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * 62));
-  }
-  return result;
-};
-
-const emailLookup = (email) => {
-  for (let user of Object.keys(users)) {
-    if (email === users[user].email) {
-      return true;
-    }
-  }
-};
-
-const urlsForUser = (userID) => {
-  let result = {};
-  console.log(userID);
-  for (let [key, value] of Object.entries(urlDatabase)) {
-    if (value['userID'] === userID) {
-      result[key] = value['longURL'];
-    }
-  }
-  return result;
-};
-
 // App Requires
+const { generateRandomString, emailLookup, urlsForUser, getUserByEmail } = require('./helpers');
 const express = require("express");
 const app = express();
 const PORT = 8080;
@@ -86,7 +58,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.get(["/urls", "/"], (req, res) => {
   let templateVars = {
     user: users[req.session.userID],
-    urls: urlsForUser(req.session.userID)
+    urls: urlsForUser(req.session.userID, urlDatabase)
   };
   res.render("urls_index", templateVars);
 });
@@ -162,7 +134,7 @@ app.post("/register", (req, res) => {
   let randomString = generateRandomString();
   if (req.body.email === "" || req.body.password === "") {
     res.status(400).send("Sorry, password or email cannot be empty! <a href='/'>Go to home page.</a>");
-  } else if (emailLookup(req.body.email)) {
+  } else if (emailLookup(req.body.email, users)) {
     res.status(400).send("Sorry, an account withbthis email exists! <a href='/'>Go to home page.</a>");
   } else {
     users[randomString] = {
@@ -178,7 +150,7 @@ app.post("/register", (req, res) => {
 
 /// Process login request
 app.post("/login", (req, res) => {
-  if (emailLookup(req.body.email)) {
+  if (emailLookup(req.body.email, users)) {
     for (let user of Object.keys(users)) {
       if (req.body.email === users[user].email) {
         if (bcrypt.compareSync(req.body.password, users[user].password)) {
