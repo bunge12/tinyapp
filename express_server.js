@@ -42,7 +42,7 @@ const users = {
 
 // Routing
 
-/// Short Links: unauth OK
+/// Short Links: redirect for everyone if exists
 app.get("/u/:shortURL", (req, res) => {
   if (typeof urlDatabase[req.params.shortURL] !== 'undefined') {
     if (urlDatabase[req.params.shortURL].longURL) {
@@ -107,7 +107,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-/// Display short URL
+/// Display short URL, only if exists and created by user
 app.get("/urls/:shortURL", (req, res) => {
   if (typeof urlDatabase[req.params.shortURL] === 'undefined') {
     errorPage(res, 404, 'This link does not exist! Please update your bookmark.');
