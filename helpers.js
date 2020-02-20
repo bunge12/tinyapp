@@ -18,7 +18,6 @@ const emailLookup = (email, database) => {
 
 const urlsForUser = (userID, database) => {
   let result = {};
-  console.log(userID);
   for (let [key, value] of Object.entries(database)) {
     if (value['userID'] === userID) {
       result[key] = value['longURL'];
