@@ -118,6 +118,7 @@ app.get("/urls/:shortURL", (req, res) => {
   if (typeof urlDatabase[req.params.shortURL] === 'undefined') {
     let templateVars = {
       error: 404,
+      user: users[req.session.userID],
       message: "This link does not exist!."
     }
     res.status(404).render("error", templateVars);
