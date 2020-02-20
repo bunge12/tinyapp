@@ -26,6 +26,14 @@ const urlsForUser = (userID, database) => {
   return result;
 };
 
+const errorPage = (res, error, message) => {
+  let templateVars = {
+    error: error,
+    message: message
+  };
+  res.status(error).render("error", templateVars);
+}
+
 /// Not using getUserByEmail, so used/tested other functions 
 /* const getUserByEmail = function (email, database) {
   for (let user of Object.keys(database)) {
@@ -35,4 +43,4 @@ const urlsForUser = (userID, database) => {
   };
 }; */
 
-module.exports = { generateRandomString, emailLookup, urlsForUser/* , getUserByEmail */ }
+module.exports = { generateRandomString, emailLookup, urlsForUser, errorPage }

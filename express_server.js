@@ -1,5 +1,5 @@
 // App Requires
-const { generateRandomString, emailLookup, urlsForUser } = require('./helpers');
+const { generateRandomString, emailLookup, urlsForUser, errorPage } = require('./helpers');
 const express = require("express");
 const app = express();
 const PORT = 8080;
@@ -38,6 +38,8 @@ const users = {
   }
 };
 
+
+
 // Routing
 
 /// Short Links: unauth OK
@@ -47,11 +49,7 @@ app.get("/u/:shortURL", (req, res) => {
       res.redirect(urlDatabase[req.params.shortURL].longURL);
     }
   } else {
-    let templateVars = {
-      error: 404,
-      message: "Sorry, this short URL doesn't exist!"
-    }
-    res.status(404).render("error", templateVars);
+    errorPage(res, 404, 'This link does not exist! Please update your bookmark.');
   }
 });
 
@@ -74,7 +72,7 @@ app.get("/urls", (req, res) => {
     let templateVars = {
       error: 403,
       message: "You need to be logged in to view this page."
-    }
+    };
     res.status(403).render("error", templateVars);
   }
 });
@@ -116,23 +114,18 @@ app.get("/urls/new", (req, res) => {
 /// Display short URL
 app.get("/urls/:shortURL", (req, res) => {
   if (typeof urlDatabase[req.params.shortURL] === 'undefined') {
-    let templateVars = {
-      error: 404,
-      user: users[req.session.userID],
-      message: "This link does not exist!."
-    }
-    res.status(404).render("error", templateVars);
+    errorPage(res, 404, 'This link does not exist! Please update your bookmark.');
   } else if (!req.session.userID) {
     let templateVars = {
       error: 403,
       message: "You need to be logged in to view this page."
-    }
+    };
     res.status(403).render("error", templateVars);
   } else if (urlDatabase[req.params.shortURL].userID !== req.session.userID) {
     let templateVars = {
       error: 403,
       message: "This record was created by another user, you don't have permission to edit it."
-    }
+    };
     res.status(403).render("error", templateVars);
   } else {
     let templateVars = {
@@ -150,7 +143,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     let templateVars = {
       error: 403,
       message: "You need to be logged in to view this page."
-    }
+    };
     res.status(403).render("error", templateVars);
   } else {
     delete urlDatabase[req.params.shortURL];
@@ -164,7 +157,7 @@ app.post("/urls/:shortURL", (req, res) => {
     let templateVars = {
       error: 403,
       message: "You need to be logged in to view this page."
-    }
+    };
     res.status(403).render("error", templateVars);
   } else {
     urlDatabase[req.params.shortURL].longURL = req.body.newURL;
@@ -186,24 +179,16 @@ app.post("/urls", (req, res) => {
 app.post("/register", (req, res) => {
   let randomString = generateRandomString();
   if (req.body.email === "" || req.body.password === "") {
-    let templateVars = {
-      error: 400,
-      message: "Sorry, password or email can't be empty!"
-    }
-    res.status(403).render("error", templateVars);
+    errorPage(res, 400, 'Sorry, the password cannot be empty.');
+
   } else if (emailLookup(req.body.email, users)) {
-    let templateVars = {
-      error: 400,
-      message: "Sorry, an account with this email already exists."
-    }
-    res.status(403).render("error", templateVars);
+    errorPage(res, 403, 'Sorry, an account with that email already exists.');
   } else {
     users[randomString] = {
       id: randomString,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10)
     };
-    console.log(users);
     req.session.userID = randomString;
     res.redirect('/urls');
   }
@@ -218,20 +203,12 @@ app.post("/login", (req, res) => {
           req.session.userID = users[user].id;
           res.redirect('/urls');
         } else {
-          let templateVars = {
-            error: 403,
-            message: "The password provided was wrong."
-          }
-          res.status(403).render("error", templateVars);
+          errorPage(res, 403, 'The password provided was wrong.');
         }
       }
     }
   } else {
-    let templateVars = {
-      error: 403,
-      message: "We can't find an account with that email."
-    }
-    res.status(403).render("error", templateVars);
+    errorPage(res, 403, 'We cannot find an account with that email.');
   }
 });
 
