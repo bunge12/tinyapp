@@ -1,5 +1,5 @@
 // App Requires
-const { generateRandomString, emailLookup, urlsForUser /*, getUserByEmail */ } = require('./helpers');
+const { generateRandomString, emailLookup, urlsForUser } = require('./helpers');
 const express = require("express");
 const app = express();
 const PORT = 8080;
@@ -43,11 +43,8 @@ const users = {
 /// Short Links: unauth OK
 app.get("/u/:shortURL", (req, res) => {
   if (typeof urlDatabase[req.params.shortURL] !== 'undefined') {
-    const longURL = urlDatabase[req.params.shortURL].longURL;
-    if (!longURL) {
-      res.status(404).send("Sorry, this short URL doesn't exist! <a href='/'>Go to home page.</a>");
-    } else {
-      res.redirect(longURL);
+    if (urlDatabase[req.params.shortURL].longURL) {
+      res.redirect(urlDatabase[req.params.shortURL].longURL);
     }
   } else {
     res.status(404).send("Sorry, this short URL doesn't exist! <a href='/'>Go to home page.</a>");
@@ -56,25 +53,37 @@ app.get("/u/:shortURL", (req, res) => {
 
 /// Home, Register, Login
 app.get(["/urls", "/"], (req, res) => {
-  let templateVars = {
-    user: users[req.session.userID],
-    urls: urlsForUser(req.session.userID, urlDatabase)
-  };
-  res.render("urls_index", templateVars);
+  if (req.session.userID) {
+    let templateVars = {
+      user: users[req.session.userID],
+      urls: urlsForUser(req.session.userID, urlDatabase)
+    };
+    res.render("urls_index", templateVars);
+  } else {
+    res.redirect('/login');
+  }
 });
 
 app.get("/register", (req, res) => {
-  let templateVars = {
-    user: users[req.session.userID]
-  };
-  res.render("register", templateVars);
+  if (req.session.userID) {
+    res.redirect('/urls');
+  } else {
+    let templateVars = {
+      user: users[req.session.userID]
+    };
+    res.render("register", templateVars);
+  }
 });
 
 app.get("/login", (req, res) => {
-  let templateVars = {
-    user: users[req.session.userID]
-  };
-  res.render("login", templateVars);
+  if (req.session.userID) {
+    res.redirect('/urls');
+  } else {
+    let templateVars = {
+      user: users[req.session.userID]
+    };
+    res.render("login", templateVars);
+  }
 });
 
 /// New URL, only if authorised
@@ -91,12 +100,18 @@ app.get("/urls/new", (req, res) => {
 
 /// Display short URL
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    user: users[req.session.userID]
-  };
-  res.render("urls_show", templateVars);
+  if (!req.session.userID) {
+    res.status(403).send("You need to be logged in! <a href='/login'>Go to login page.</a>");
+  } else if (typeof urlDatabase[req.params.shortURL] === 'undefined') {
+    res.status(403).send("You don't have permission to view this page! <a href='/'>Go to home page.</a>");
+  } else {
+    let templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
+      user: users[req.session.userID]
+    };
+    res.render("urls_show", templateVars);
+  }
 });
 
 /// Delete, only if created by user
@@ -154,7 +169,7 @@ app.post("/login", (req, res) => {
     for (let user of Object.keys(users)) {
       if (req.body.email === users[user].email) {
         if (bcrypt.compareSync(req.body.password, users[user].password)) {
-          res.session.userID = users[user].id;
+          req.session.userID = users[user].id;
           res.redirect('/urls');
         } else {
           res.status(403).send("Sorry, wrong password! <a href='/'>Go to home page.</a>");
