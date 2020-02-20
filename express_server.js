@@ -6,6 +6,7 @@ const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+const methodOverride = require('method-override')
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,6 +15,8 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 app.set("view engine", "ejs");
+app.use(methodOverride('_method'))
+
 
 // App Data
 const urlDatabase = {
@@ -136,7 +139,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 /// Update, only if created by user
-app.post("/urls/:shortURL", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   if (req.session.userID !== urlDatabase[req.params.shortURL].userID) {
     errorPage(res, 403, 'You need to be logged in to view this page.');
   } else {

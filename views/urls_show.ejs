@@ -20,7 +20,7 @@
   <div class="card text-center">
     <div class="card-body mx-auto text-center">
       <h5 class="card-title">Edit</h5>
-      <form class="form-inline" action='/urls/<%= shortURL %>' method='post'>
+      <form class="form-inline" action='/urls/<%= shortURL %>?_method=put' method='post'>
         <div class="form-group mb-2">
           <label for="newURLhint" class="sr-only">New URL</label>
           <input type="text" readonly class="form-control-plaintext" id="newURLhint" value="New URL:">
