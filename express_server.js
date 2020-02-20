@@ -17,7 +17,6 @@ app.use(cookieSession({
 app.set("view engine", "ejs");
 app.use(methodOverride('_method'))
 
-
 // App Data
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
@@ -40,8 +39,6 @@ const users = {
     password: "dishwasher-funk"
   }
 };
-
-
 
 // Routing
 
@@ -129,9 +126,9 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 /// Delete, only if created by user
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   if (req.session.userID !== urlDatabase[req.params.shortURL].userID) {
-    errorPage(res, 403, 'You need to be logged in to view this page.');
+    errorPage(res, 403, "You can\'t delete records you didn't create!");
   } else {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls');
@@ -141,7 +138,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 /// Update, only if created by user
 app.put("/urls/:shortURL", (req, res) => {
   if (req.session.userID !== urlDatabase[req.params.shortURL].userID) {
-    errorPage(res, 403, 'You need to be logged in to view this page.');
+    errorPage(res, 403, "You can\'t edit records you didn't create!");
   } else {
     urlDatabase[req.params.shortURL].longURL = req.body.newURL;
     res.redirect('/urls/' + req.params.shortURL);
