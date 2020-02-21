@@ -11,6 +11,8 @@ This project was created and published by me as part of my learnings at Lighthou
 - Tracks total and unique hits (analytics available only to link creator)
 - Easy-to-use and intuitive interface
 
+!["Screenshot of URLs page"]
+
 ## Dependencies
 
 - Node.js
