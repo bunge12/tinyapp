@@ -1,4 +1,4 @@
-const { assert, expect } = require('chai');
+const { assert } = require('chai');
 
 const { generateRandomString, emailLookup, urlsForUser } = require('../helpers.js');
 
@@ -22,17 +22,17 @@ const urlDatabase = {
 
 describe('emailLookup:', function () {
   it('should return true if user with email exists', function () {
-    const user = emailLookup("user@example.com", testUsers)
+    const user = emailLookup("user@example.com", testUsers);
     const expectedOutput = true;
     assert.equal(user, expectedOutput);
   });
   it('should return false if user with email doesnt exist', function () {
-    const user = emailLookup("user2@example.com", testUsers)
+    const user = emailLookup("user2@example.com", testUsers);
     const expectedOutput = true;
     assert.equal(user, expectedOutput);
   });
   it('should return undefined if passed empty string', function () {
-    const user = emailLookup("", testUsers)
+    const user = emailLookup("", testUsers);
     const expectedOutput = undefined;
     assert.equal(user, expectedOutput);
   });

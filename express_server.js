@@ -5,9 +5,9 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
-var cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
-const methodOverride = require('method-override')
+const methodOverride = require('method-override');
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -143,7 +143,7 @@ app.get("/urls/:shortURL", (req, res) => {
 /// Delete, only if created by user
 app.delete("/urls/:shortURL", (req, res) => {
   if (req.session.userID !== urlDatabase[req.params.shortURL].userID) {
-    errorPage(res, 403, "You can\'t delete records you didn't create!");
+    errorPage(res, 403, "You can't delete records you didn't create!");
   } else {
     delete urlDatabase[req.params.shortURL];
     res.redirect('/urls');
@@ -153,7 +153,7 @@ app.delete("/urls/:shortURL", (req, res) => {
 /// Update, only if created by user
 app.put("/urls/:shortURL", (req, res) => {
   if (req.session.userID !== urlDatabase[req.params.shortURL].userID) {
-    errorPage(res, 403, "You can\'t edit records you didn't create!");
+    errorPage(res, 403, "You can't edit records you didn't create!");
   } else {
     urlDatabase[req.params.shortURL].longURL = req.body.newURL;
     res.redirect('/urls/' + req.params.shortURL);

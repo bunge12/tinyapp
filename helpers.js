@@ -34,11 +34,11 @@ const errorPage = (res, error, message) => {
   res.status(error).render("error", templateVars);
 };
 
-const inList = (visitor_id, shortURL, db, log) => {
+const inList = (visitor_id, shortURL, db) => {
   let uniques = db[shortURL].visitors;
   if (!uniques.includes(visitor_id)) {
     uniques.push(visitor_id);
-  };
+  }
 };
 
 const visitorID = (req, res) => {
