@@ -15,8 +15,13 @@
     <div class="card-body">
       <h5 class="card-title">TinyURL for: <%= longURL %></h5>
       <p class="card-text">Short URL: <a target='_blank' href="/u/<%= shortURL %>"><%= shortURL %></a></p>
-      <p class="card-text">Total number of hits: <%= totalHits %></a></p>
 
+      <button type="button" class="btn btn-dark" disabled>
+        Total Hits <span class="badge badge-light"><%= totalHits %></span>
+      </button>
+      <button type="button" class="btn btn-dark" disabled>
+        Unique Hits <span class="badge badge-light"><%= uniqueHits %></span>
+      </button>
     </div>
   </div>
   <div class="card text-center">

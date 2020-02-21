@@ -34,6 +34,19 @@ const errorPage = (res, error, message) => {
   res.status(error).render("error", templateVars);
 };
 
+const inList = (visitor_id, shortURL, db) => {
+  let uniques = db[shortURL].visitors;
+  if (!uniques.includes(visitor_id)) {
+    uniques.push(visitor_id);
+  }
+};
+
+const visitorID = (req, res) => {
+  if (!req.cookies['visitor_id']) {
+    res.cookie('visitor_id', generateRandomString());
+  }
+};
+
 /// Not using getUserByEmail, so used/tested other functions
 /* const getUserByEmail = function (email, database) {
   for (let user of Object.keys(database)) {
@@ -43,4 +56,4 @@ const errorPage = (res, error, message) => {
   };
 }; */
 
-module.exports = { generateRandomString, emailLookup, urlsForUser, errorPage };
+module.exports = { generateRandomString, emailLookup, urlsForUser, errorPage, inList, visitorID };

@@ -1,10 +1,11 @@
 // App Requires
-const { generateRandomString, emailLookup, urlsForUser, errorPage } = require('./helpers');
+const { generateRandomString, emailLookup, urlsForUser, errorPage, inList, visitorID } = require('./helpers');
 const express = require("express");
 const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
+var cookieParser = require('cookie-parser')
 const bcrypt = require('bcrypt');
 const methodOverride = require('method-override')
 
@@ -15,12 +16,16 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 app.set("view engine", "ejs");
-app.use(methodOverride('_method'))
+app.use(methodOverride('_method'));
+app.use(cookieParser());
 
 // App Data
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW", totalHits: 0 },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW", totalHits: 0 }
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW", totalHits: 0, visitors: ['a', 'b'] },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW", totalHits: 0, visitors: ['a', 'b'] }
+};
+const visitLog = {
+
 };
 const users = {
   "userRandomID": {
@@ -46,6 +51,8 @@ const users = {
 app.get("/u/:shortURL", (req, res) => {
   if (typeof urlDatabase[req.params.shortURL] !== 'undefined') {
     if (urlDatabase[req.params.shortURL].longURL) {
+      visitorID(req, res);
+      inList(req.cookies['visitor_id'], req.params.shortURL, urlDatabase);
       urlDatabase[req.params.shortURL].totalHits += 1;
       res.redirect(urlDatabase[req.params.shortURL].longURL);
     }
@@ -57,12 +64,15 @@ app.get("/u/:shortURL", (req, res) => {
 /// Home, Register, Login
 app.get("/", (req, res) => {
   if (req.session.userID) {
+    visitorID(req, res);
     res.redirect('/urls');
   } else {
+    visitorID(req, res);
     res.redirect('/login');
   }
 });
 app.get("/urls", (req, res) => {
+  visitorID(req, res);
   if (req.session.userID) {
     let templateVars = {
       user: users[req.session.userID],
@@ -121,7 +131,8 @@ app.get("/urls/:shortURL", (req, res) => {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
       user: users[req.session.userID],
-      totalHits: urlDatabase[req.params.shortURL].totalHits
+      totalHits: urlDatabase[req.params.shortURL].totalHits,
+      uniqueHits: urlDatabase[req.params.shortURL].visitors.length
     };
     res.render("urls_show", templateVars);
   }
@@ -153,7 +164,8 @@ app.post("/urls", (req, res) => {
   urlDatabase[randomString] = {
     longURL: req.body.longURL,
     userID: req.session.userID,
-    totalHits: 0
+    totalHits: 0,
+    visitors: []
   };
   res.redirect('/urls/' + randomString);
 });
