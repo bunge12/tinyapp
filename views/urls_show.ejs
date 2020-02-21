@@ -49,10 +49,10 @@
       </tr>
     </thead>
     <tbody>
-      <% for(let log in visitLog) { %>
+      <% for(let log of visitLog) { %>
       <tr>
-        <td><%= log %></td>
-        <td><%= log.timestamp %></td>
+        <td><%= log["visitor_id"] %></td>
+        <td><%= new Date(log["time"]) %></td>
       </tr>
       <% } %>
     </tbody>
