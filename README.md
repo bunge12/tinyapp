@@ -10,9 +10,12 @@ This project was created and published by me as part of my learnings at Lighthou
 - RESTful
 - Tracks total and unique hits (analytics available only to link creator)
 - Easy-to-use and intuitive interface
+- Custom error pages with custom messages
 
-!["screenshot description"](#)
-!["screenshot description"](#)
+!["Login page"](/docs/login.png)
+!["Main App page"](/docs/home.png)
+!["Custom Error page"](/docs/error.png)
+
 
 ## Dependencies
 
