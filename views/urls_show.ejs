@@ -40,6 +40,26 @@
       </form>
     </div>
   </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Visitor</th>
+        <th scope="col">Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for(let log in visitLog) { %>
+      <tr>
+        <td><%= log %></td>
+        <td><%= log.timestamp %></td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+
+
+
   <div class="card-footer text-muted"></div>
   </div>
   <!-- Bootstrap JS -->

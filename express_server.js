@@ -24,9 +24,9 @@ const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW", totalHits: 0, visitors: ['a', 'b'] },
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW", totalHits: 0, visitors: ['a', 'b'] }
 };
-const visitLog = {
 
-};
+const visitLog = { b6UTxQ: [], i3BoGr: [] };
+
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -54,6 +54,7 @@ app.get("/u/:shortURL", (req, res) => {
       visitorID(req, res);
       inList(req.cookies['visitor_id'], req.params.shortURL, urlDatabase);
       urlDatabase[req.params.shortURL].totalHits += 1;
+      visitLog[req.params.shortURL].push({ visitor_id: req.cookies['visitor_id'], time: Date.now() });
       res.redirect(urlDatabase[req.params.shortURL].longURL);
     }
   } else {
@@ -132,7 +133,8 @@ app.get("/urls/:shortURL", (req, res) => {
       longURL: urlDatabase[req.params.shortURL].longURL,
       user: users[req.session.userID],
       totalHits: urlDatabase[req.params.shortURL].totalHits,
-      uniqueHits: urlDatabase[req.params.shortURL].visitors.length
+      uniqueHits: urlDatabase[req.params.shortURL].visitors.length,
+      visitLog: visitLog[req.params.shortURL]
     };
     res.render("urls_show", templateVars);
   }
@@ -167,6 +169,7 @@ app.post("/urls", (req, res) => {
     totalHits: 0,
     visitors: []
   };
+  visitLog[randomString] = [];
   res.redirect('/urls/' + randomString);
 });
 
